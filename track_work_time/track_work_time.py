@@ -17,22 +17,22 @@ class TrackWorkTime:
     def set_worked_hours(self, work_unit_name, day, hours):
         minutes = hours.total_seconds()/60
         converted_hour = minutes/60
-        found_work_unit = False
 
+        work_unit = self._get_work_unit(work_unit_name)
+
+        if work_unit is None:
+            logger.error('It could not find the work unit %s', work_unit_name)
+        else:
+            work_unit.set_week_day(day,converted_hour)
+
+    def _get_work_unit(self, work_unit_name):
         for work_unit in self.work_units:
             if work_unit.get_name() == work_unit_name:
-                found_work_unit = True
-                work_unit.set_week_day(day,converted_hour)
-
-        if not found_work_unit:
-            logger.error('It could not find the work unit %s', work_unit_name)
+                return work_unit
+        return None
 
     def get_week_hours(self, work_unit_name, start_date, end_date):
-        week_days = None
-        for work_unit in self.work_units:
-            if work_unit.get_name() == work_unit_name:
-                week_days = work_unit.get_week_days()
-
+        week_days = self._get_week_days_from(work_unit_name)
         if week_days is None:
             logger.error('It could not find the work unit %s', work_unit_name)
             return []
@@ -53,3 +53,11 @@ class TrackWorkTime:
             week_days[index_start_week + 3].hours,
             week_days[index_start_week + 4].hours
         ]
+
+    def _get_week_days_from(self, work_unit_name):
+        work_unit = self._get_work_unit(work_unit_name)
+
+        if work_unit is None:
+            return None
+
+        return work_unit.get_week_days()
