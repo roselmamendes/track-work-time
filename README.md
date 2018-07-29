@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/roselmamendes/track-work-time.svg?branch=master)](https://travis-ci.org/roselmamendes/track-work-time)
+
 # Track Work Time
 
 Organize the work during the day/week and set how much time you spend in a work unit (task).
