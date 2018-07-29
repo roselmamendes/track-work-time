@@ -1,6 +1,6 @@
 import logging
 from track_work_time import store
-
+from datetime import timedelta
 logger = logging.getLogger(__name__)
 
 
@@ -23,29 +23,51 @@ class TrackWorkTime:
         else:
             store.set_week_day(day, converted_hour, work_unit)
 
-    def get_week_hours(self, work_unit_name, start_date, end_date):
-        week_days = store.get_week_days_from(work_unit_name)
-        if week_days is None:
-            logger.error('It could not find the work unit %s', work_unit_name)
+    def get_week_hours(self, work_unit_name, week_monday):
+        if self._is_monday(week_monday):
+            logger.error('Inform a monday date to get the hours for a '
+                         + 'specific week.', work_unit_name)
             return []
 
-        index_start_week = -1
-        for index, week_day in enumerate(week_days):
-            if week_day.day == start_date:
-                index_start_week = index
+        week_days = self._get_week_days_from_db(work_unit_name, week_monday)
 
-        if index_start_week == -1:
+        if not week_days:
             logger.error(
-                'It could not find the %s for work unit %s',
-                start_date,
+                'It could not find the week of %s for work unit %s',
+                week_monday,
                 work_unit_name
             )
             return []
 
-        return [
-            week_days[index_start_week].hours,
-            week_days[index_start_week + 1].hours,
-            week_days[index_start_week + 2].hours,
-            week_days[index_start_week + 3].hours,
-            week_days[index_start_week + 4].hours
-        ]
+        return self._get_week_hours(week_days)
+
+    def _is_monday(self, day):
+        return day.weekday() != 0
+
+    def _get_week_days_from_db(self, work_unit_name, week_monday):
+        week_friday = week_monday + timedelta(days=4)
+
+        return store.get_week_days_from(
+            work_unit_name,
+            week_monday,
+            week_friday
+        )
+
+    def _get_week_hours(self, week_days):
+        week_days_to_be_returned = []
+
+        for week_index in range(0, 5):
+            hours = self._get_hours_from_week_index(week_index, week_days)
+
+            week_days_to_be_returned.append(hours)
+
+        return week_days_to_be_returned
+
+    def _get_hours_from_week_index(self, week_index, week_days):
+        hours = 0
+        for week_day in week_days:
+            if week_day.day.weekday() == week_index:
+                hours = week_day.hours
+                break
+
+        return hours

@@ -70,13 +70,19 @@ def set_week_day(day, hours, work_unit):
     session.commit()
 
 
-def get_week_days_from(work_unit_name):
-    work_unit = get_work_unit(work_unit_name)
+def get_week_days_from(work_unit_name, monday, friday):
+    work_unit = session.query(WorkUnit).filter(
+        WorkUnit.name == work_unit_name
+    ).all()
 
-    if work_unit is None:
-        return None
+    if work_unit:
+        return session.query(WeekDay).filter(
+            WeekDay.workunit_id == work_unit[0].id,
+            WeekDay.day >= monday,
+            WeekDay.day <= friday
+        ).all()
 
-    return work_unit.weekdays
+    return []
 
 
 def delete_all_on_db():

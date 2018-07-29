@@ -51,7 +51,7 @@ class TestTrackWorkTime(TestCase):
         self.assertEqual(
             [4.0, 4.0, 4.0, 4.0, 4.0],
             track.get_week_hours(
-                'BAU', date(2017, 7, 10), date(2017, 7, 14)
+                'BAU', date(2017, 7, 10)
             )
         )
 
@@ -60,11 +60,13 @@ class TestTrackWorkTime(TestCase):
         track = TrackWorkTime()
 
         actual_week_hours = track.get_week_hours(
-            'BAU', date(2017, 7, 10), date(2017, 7, 14)
+            'BAU', date(2017, 7, 10)
         )
 
         log_error.assert_called_once_with(
-            'It could not find the work unit %s', 'BAU'
+            'It could not find the week of %s for work unit %s',
+            date(2017, 7, 10),
+            'BAU'
         )
         self.assertEqual([], actual_week_hours)
 
@@ -74,11 +76,11 @@ class TestTrackWorkTime(TestCase):
         store.set_work_unit('BAU')
 
         actual_week_hours = track.get_week_hours(
-            'BAU', date(2017, 7, 10), None
+            'BAU', date(2017, 7, 10)
         )
 
         log_error.assert_called_once_with(
-            'It could not find the %s for work unit %s',
+            'It could not find the week of %s for work unit %s',
             date(2017, 7, 10),
             'BAU'
         )
@@ -90,7 +92,25 @@ class TestTrackWorkTime(TestCase):
     ):
         track = TrackWorkTime()
 
-        track.set_worked_hours('BAU', None, timedelta(hours=2))
+        track.set_worked_hours('BAU', date(2017, 6, 21), timedelta(hours=2))
 
         log_error.assert_called_once_with('It could not find the work unit %s',
                                           'BAU')
+
+    def test_should_find_the_week_hours_even_for_not_completed_week(
+            self
+    ):
+        track = TrackWorkTime()
+
+        track.set_work_unit('App Dev')
+        track.set_worked_hours(
+            'App Dev', date(2017, 7, 11), timedelta(hours=4))
+        track.set_worked_hours(
+            'App Dev', date(2017, 7, 12), timedelta(hours=4))
+
+        self.assertEqual(
+            [0, 4.0, 4.0, 0, 0],
+            track.get_week_hours(
+                'App Dev', date(2017, 7, 10)
+            )
+        )
