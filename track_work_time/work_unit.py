@@ -1,5 +1,6 @@
 from track_work_time.week_day import WeekDay
 
+
 class WorkUnit:
 
     def __init__(self, name):

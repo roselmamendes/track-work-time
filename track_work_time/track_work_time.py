@@ -3,6 +3,7 @@ from track_work_time.work_unit import WorkUnit
 
 logger = logging.getLogger(__name__)
 
+
 class TrackWorkTime:
 
     def __init__(self):
@@ -23,7 +24,7 @@ class TrackWorkTime:
         if work_unit is None:
             logger.error('It could not find the work unit %s', work_unit_name)
         else:
-            work_unit.set_week_day(day,converted_hour)
+            work_unit.set_week_day(day, converted_hour)
 
     def _get_work_unit(self, work_unit_name):
         for work_unit in self.work_units:
@@ -43,7 +44,11 @@ class TrackWorkTime:
                 index_start_week = index
 
         if index_start_week == -1:
-            logger.error('It could not find the %s for work unit %s', start_date, work_unit_name)
+            logger.error(
+                'It could not find the %s for work unit %s',
+                start_date,
+                work_unit_name
+            )
             return []
 
         return [

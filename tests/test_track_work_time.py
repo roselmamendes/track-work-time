@@ -2,6 +2,7 @@ from unittest import TestCase, mock
 from datetime import date, timedelta
 from track_work_time.track_work_time import TrackWorkTime
 
+
 class TestTrackWorkTime(TestCase):
     def test_should_save_a_work_unit(self):
         trackWorkTime = TrackWorkTime()
@@ -27,42 +28,60 @@ class TestTrackWorkTime(TestCase):
         trackWorkTime = TrackWorkTime()
         trackWorkTime.set_work_unit('BAU')
 
-        trackWorkTime.set_worked_hours('BAU', date(2017,7,10), timedelta(hours=4))
-        trackWorkTime.set_worked_hours('BAU', date(2017,7,11), timedelta(hours=4))
-        trackWorkTime.set_worked_hours('BAU', date(2017,7,12), timedelta(hours=4))
-        trackWorkTime.set_worked_hours('BAU', date(2017,7,13), timedelta(hours=4))
-        trackWorkTime.set_worked_hours('BAU', date(2017,7,14), timedelta(hours=4))
+        trackWorkTime.set_worked_hours(
+            'BAU', date(2017, 7, 10), timedelta(hours=4))
+        trackWorkTime.set_worked_hours(
+            'BAU', date(2017, 7, 11), timedelta(hours=4))
+        trackWorkTime.set_worked_hours(
+            'BAU', date(2017, 7, 12), timedelta(hours=4))
+        trackWorkTime.set_worked_hours(
+            'BAU', date(2017, 7, 13), timedelta(hours=4))
+        trackWorkTime.set_worked_hours(
+            'BAU', date(2017, 7, 14), timedelta(hours=4))
 
         self.assertEqual(
-            [4.0,4.0,4.0,4.0,4.0],
-            trackWorkTime.get_week_hours('BAU', date(2017, 7, 10), date(2017,7,14))
+            [4.0, 4.0, 4.0, 4.0, 4.0],
+            trackWorkTime.get_week_hours(
+                'BAU', date(2017, 7, 10), date(2017, 7, 14)
+            )
         )
 
     @mock.patch('track_work_time.track_work_time.logger.error')
-    def test_get_week_hours_return_empty_list_when_did_not_find_work_unit(self, log_error):
+    def test_return_empty_list_when_did_not_find_work_unit(self, log_error):
         trackWorkTime = TrackWorkTime()
 
-        actual_week_hours = trackWorkTime.get_week_hours('BAU', date(2017, 7, 10), date(2017, 7, 14))
+        actual_week_hours = trackWorkTime.get_week_hours(
+            'BAU', date(2017, 7, 10), date(2017, 7, 14)
+        )
 
-        log_error.assert_called_once_with('It could not find the work unit %s', 'BAU')
+        log_error.assert_called_once_with(
+            'It could not find the work unit %s', 'BAU'
+        )
         self.assertEqual([], actual_week_hours)
 
     @mock.patch('track_work_time.track_work_time.logger.error')
-    def test_get_week_hours_return_empty_list_when_did_not_find_week_day(self, log_error):
+    def test_return_empty_list_when_did_not_find_week_day(self, log_error):
         trackWorkTime = TrackWorkTime()
         trackWorkTime.set_work_unit('BAU')
 
-        actual_week_hours = trackWorkTime.get_week_hours('BAU', date(2017,7,10), None)
+        actual_week_hours = trackWorkTime.get_week_hours(
+            'BAU', date(2017, 7, 10), None
+        )
 
-        log_error.assert_called_once_with('It could not find the %s for work unit %s', date(2017,7,10), 'BAU')
+        log_error.assert_called_once_with(
+            'It could not find the %s for work unit %s',
+            date(2017, 7, 10),
+            'BAU'
+        )
         self.assertEqual([], actual_week_hours)
 
     @mock.patch('track_work_time.track_work_time.logger.error')
-    def test_set_worked_hours_call_log_error_when_did_not_find_work_unit(self, log_error):
+    def test_set_worked_hours_call_log_error_when_didnt_find_work_unit(
+            self, log_error
+    ):
         trackWorkTime = TrackWorkTime()
 
         trackWorkTime.set_worked_hours('BAU', None, timedelta(hours=2))
 
         log_error.assert_called_once_with('It could not find the work unit %s',
                                           'BAU')
-
