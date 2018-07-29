@@ -42,7 +42,7 @@ class TestTrackWorkTime(TestCase):
     def test_get_week_hours_return_empty_list_when_did_not_find_work_unit(self, log_error):
         trackWorkTime = TrackWorkTime()
 
-        actual_week_hours = trackWorkTime.get_week_hours('BAU', None, None)
+        actual_week_hours = trackWorkTime.get_week_hours('BAU', date(2017, 7, 10), date(2017, 7, 14))
 
         log_error.assert_called_once_with('It could not find the work unit %s', 'BAU')
         self.assertEqual([], actual_week_hours)
