@@ -13,8 +13,7 @@ class TrackWorkTime:
         return store.get_work_units()
 
     def set_worked_hours(self, work_unit_name, day, hours):
-        minutes = hours.total_seconds()/60
-        converted_hour = minutes/60
+        converted_hour = self._obtain_converted_hour(hours)
 
         work_unit = store.get_work_unit(work_unit_name)
 
@@ -22,6 +21,10 @@ class TrackWorkTime:
             logger.error('It could not find the work unit %s', work_unit_name)
         else:
             store.set_week_day(day, converted_hour, work_unit)
+
+    def _obtain_converted_hour(self, hours):
+        minutes = hours.total_seconds()/60
+        return minutes/60
 
     def get_week_hours(self, work_unit_name, week_monday):
         if self._is_monday(week_monday):
