@@ -4,3 +4,5 @@ python:
 before_script:
   - flake8 .
   - bandit -r .
+script:
+  - python -m unittest
