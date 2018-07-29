@@ -3,3 +3,5 @@
 __pycache__
 *.sh~
 *.yml~
+*.py~
+*.db
