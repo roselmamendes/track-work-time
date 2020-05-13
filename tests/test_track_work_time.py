@@ -7,10 +7,12 @@ from track_work_time import store
 class TestTrackWorkTime(TestCase):
 
     def setUp(self):
-        store.delete_all_on_db()
+        self.store = Store('sqlite:///test.db')
+        self.store.delete_all_on_db()
 
     def tearDown(self):
-        store.delete_all_on_db()
+        self.store.delete_all_on_db()
+        self.store.close_session()
 
     def test_should_save_a_work_unit(self):
         track = TrackWorkTime()
